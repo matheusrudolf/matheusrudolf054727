@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "lib": ["es2018"],
+    "declaration": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noEmitOnError": false,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": false,
+    "noImplicitThis": true,
+    "noUnusedParameters": false,
+    "noUnusedLocals": false,
+    "rootDir": ".",
+    "outDir": ".",
+    "skipDefaultLibCheck": true,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "strictNullChecks": false,
+    "target": "es2018",
+    "types": ["node"],
+    "resolveJsonModule": true,
+    "esModuleInterop": true
+  },
+  "include": [
+    "*/index.ts",
+    "*/schema.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/*.spec.ts",
+    "**/files/**",
+    "**/__*"
+  ]
+}

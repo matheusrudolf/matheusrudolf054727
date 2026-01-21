@@ -1,0 +1,15 @@
+{
+    "$schema": "../node_modules/@angular-devkit/schematics/collection-schema.json",
+    "schematics": {
+        "crud-component": {
+            "description": "Gera um componente CRUD customizado com PrimeNG",
+            "factory": "./crud-component/index#crudComponent",
+            "schema": "./crud-component/schema.json"
+        },
+        "crud-base": {
+            "description": "Gera um componente CRUD Base com componentes PrimeNG",
+            "factory": "./crud-base/index#crudBase",
+            "schema": "./crud-base/schema.json"
+        }
+    }
+}

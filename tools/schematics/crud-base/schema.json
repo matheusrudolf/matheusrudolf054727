@@ -1,0 +1,27 @@
+{
+    "$schema": "http://json-schema.org/schema",
+    "$id": "CrudBaseSchema",
+    "title": "CRUD Base Options",
+    "type": "object",
+    "properties": {
+        "name": {
+            "type": "string",
+            "description": "Nome do componente CRUD",
+            "$default": {
+                "$source": "argv",
+                "index": 0
+            },
+            "x-prompt": "Qual o nome do componente?"
+        },
+        "path": {
+            "type": "string",
+            "format": "path",
+            "description": "Caminho onde o componente será criado",
+            "default": "src/app",
+            "x-prompt": "Onde deseja criar o componente?"
+        }
+    },
+    "required": [
+        "name"
+    ]
+}

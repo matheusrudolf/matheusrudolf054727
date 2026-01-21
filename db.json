@@ -1,0 +1,36 @@
+{
+    "usuarios": [
+        {
+            "id": 1,
+            "nome": "João Mario",
+            "email": "joao.mario@email.com",
+            "telefone": "9 9999-9999",
+            "role": "Gerente",
+            "status": true
+        },
+        {
+            "id": 2,
+            "nome": "Rodrigo Santos",
+            "email": "rodsantos@email.com",
+            "telefone": "9 9999-9999",
+            "role": "Vendedor",
+            "status": true
+        },
+        {
+            "id": 3,
+            "nome": "Aline Gomes",
+            "email": "aline_gomes96@email.com",
+            "telefone": "9 9999-9999",
+            "role": "Vendedor",
+            "status": true
+        },
+        {
+            "id": 4,
+            "nome": "Matheus Rondon Rudolf",
+            "email": "matheus.rudolf@email.com",
+            "telefone": "9 9999-9999",
+            "role": "Administrador",
+            "status": true
+        }
+    ]
+}

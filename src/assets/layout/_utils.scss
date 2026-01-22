@@ -17,9 +17,60 @@
 }
 
 .p-toast {
+
     &.p-toast-top-right,
     &.p-toast-top-left,
     &.p-toast-top-center {
         top: 100px;
+    }
+}
+
+/* Layout Responsivo Stack - SEM ::ng-deep */
+:root {
+    @media screen and (max-width: 960px) {
+        .p-datatable-responsive-stack {
+            .p-datatable-thead {
+                display: none;
+            }
+
+            .p-datatable-tbody>tr {
+                border: 1px solid var(--surface-border);
+                display: block;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            }
+
+            .p-datatable-tbody>tr>td {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0.75rem 1rem;
+                border: none;
+            }
+
+            .p-datatable-tbody>tr>td:last-child {
+                border-bottom: none;
+            }
+
+            .p-datatable-tbody>tr>td::before {
+                content: attr(data-label);
+                font-weight: 700;
+                color: var(--text-color-secondary);
+                min-width: 120px;
+            }
+        }
+    }
+
+    @media screen and (max-width: 640px) {
+        .p-datatable-responsive-stack {
+            .p-datatable-tbody>tr>td {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+
+            .p-datatable-tbody>tr>td::before {
+                font-size: 0.875rem;
+            }
+        }
     }
 }

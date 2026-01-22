@@ -1,8 +1,7 @@
 export class Pageable<T> {
-    public dados: T[] = [];
-    public size: number = 10;
-    public page!: number;
+    public content: T[] = [];
+    public page: number = 0;
+    public size: number = 5;
     public total!: number;
-    public sucesso: boolean;
-    public mensagem: string;
+    public pageCount!: number;
 }

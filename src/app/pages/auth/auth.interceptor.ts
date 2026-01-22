@@ -2,76 +2,53 @@ import { AuthService } from '@/core/auth.service';
 import type { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { catchError, filter, switchMap, take, throwError } from 'rxjs';
+import { catchError, switchMap, throwError } from 'rxjs';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
     const authService = inject(AuthService);
     const router = inject(Router);
 
-    const publicUrls = ['/auth/login', '/auth/register', '/auth/refresh'];
-    const isPublicUrl = publicUrls.some(url => req.url.includes(url));
+    const publicUrls = [
+        '/autenticacao/login',
+        '/autenticacao/register',
+        '/autenticacao/refresh'
+    ];
 
-    if (isPublicUrl) {
+    if (publicUrls.some(url => req.url.includes(url))) {
         return next(req);
     }
 
-    // Adiciona o token JWT ao cabeçalho
-    const token = authService.getToken();
+    const token = authService.getAccessToken();
 
-    if (token) {
-        req = req.clone({
-            setHeaders: {
-                Authorization: `Bearer ${token}`
-            }
-        });
-    }
+    const authReq = token
+        ? req.clone({
+            setHeaders: { Authorization: `Bearer ${token}` }
+        })
+        : req;
 
-    return next(req).pipe(
+    return next(authReq).pipe(
         catchError((error: HttpErrorResponse) => {
-            // Se receber 401 Unauthorized, tenta renovar o token
-            if (error.status === 401 && !req.url.includes('/auth/refresh')) {
-                // Se já há refresh em andamento, espera
-                if (authService.refreshInProgress) {
-                    return authService.refreshTokenSubject.pipe(
-                        filter(t => t !== null),
-                        take(1),
-                        switchMap(newToken => {
-                            const cloned = req.clone({
-                                setHeaders: { Authorization: `Bearer ${newToken}` }
-                            });
-                            return next(cloned);
-                        })
-                    );
-                }
 
-                authService.refreshInProgress = true;
-                authService.refreshTokenSubject.next(null);
-
+            if (error.status === 401 && authService.getRefreshToken()) {
                 return authService.refreshToken().pipe(
-                    switchMap((newTokens) => {
-                        authService.refreshInProgress = false;
-                        authService.refreshTokenSubject.next(newTokens.accessToken);
-
-                        const cloned = req.clone({
+                    switchMap(res => {
+                        const retryReq = req.clone({
                             setHeaders: {
-                                Authorization: `Bearer ${newTokens.accessToken}`
+                                Authorization: `Bearer ${res.access_token}`
                             }
                         });
-
-                        return next(cloned);
+                        return next(retryReq);
                     }),
-                    catchError(refreshErr => {
-                        authService.refreshInProgress = false;
+                    catchError(refreshError => {
                         authService.logout();
-                        router.navigate(['/auth/login']);
-                        return throwError(() => refreshErr);
+                        router.navigate(['/autenticacao/login']);
+                        return throwError(() => refreshError);
                     })
                 );
             }
 
-            // SE receber 403 Forbidden, redireciona para página de acesso negado
             if (error.status === 403) {
-                router.navigate(['auth/access-denied']);
+                router.navigate(['autenticacao/access-denied']);
             }
 
             return throwError(() => error);

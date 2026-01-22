@@ -14,7 +14,7 @@ export abstract class AbstractService<RESPONSE, RESUME> {
     protected abstract get resource(): string;
 
     protected get endpoint(): string {
-        return `${environment.apiUrl}/api/${this.resource}`;
+        return `${environment.apiUrl}/v1/${this.resource}`;
     }
 
     public listPageable(params: Map<string, any>, page: Pageable<any>): Observable<Pageable<RESUME>> {

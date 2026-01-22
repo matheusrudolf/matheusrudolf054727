@@ -14,7 +14,7 @@ import { PasswordModule } from 'primeng/password';
 @Component({
     selector: 'app-login',
     standalone: true,
-    imports: [InputTextModule, CheckboxModule, ButtonModule, ReactiveFormsModule, MessageModule, PasswordModule, FloatLabelModule, RouterLink],
+    imports: [InputTextModule, CheckboxModule, ButtonModule, ReactiveFormsModule, MessageModule, PasswordModule, FloatLabelModule],
     template: `
         <div class="h-screen">
             <div class="flex justify-center items-center h-full">
@@ -25,11 +25,8 @@ import { PasswordModule } from 'primeng/password';
                 </div>
                 <div class="flex flex-col rounded-[2vw] bg-linear-to-b from-emerald-500 to-transparent dark:from-emerald-800 to-transparent p-1">
                     <div class="content-center bg-white dark:bg-stone-950 rounded-[2vw] p-8 md:p-15 shadow-lg shadow-emerald-300/40 dark:shadow-emerald-500/40">
-                        <div class="flex justify-center mb-4">
-                            <img src="assets/imgs/solution_softworks_logo.png" width="80" alt="Solution Softworks">
-                        </div>
-                        <p class="text-2xl text-center font-bold md:text-3xl" style="margin-bottom: 0;">Seja bem vindo a Solution Softworks</p>
-                        <p class="text-lg font-semibold text-center md:text-xl" style="margin: 0;">Tecnologia de Sistemas Web</p>
+                        <p class="text-2xl text-center font-bold md:text-3xl" style="margin-bottom: 0;">Seja bem vindo ao Gerenciador de Pets</p>
+                        <p class="text-lg font-semibold text-center md:text-xl" style="margin: 0;">Gestão de Pets Web</p>
                         <p class="text-center text-slate-400 dark:text-white" style="margin-top: 3rem;">Faça login para continuar</p>
                         <div class="flex justify-center">
                             <form [formGroup]="loginForm" class="flex flex-col gap-6 mt-4 w-full"
@@ -51,13 +48,6 @@ import { PasswordModule } from 'primeng/password';
                                     @if (loginForm.get('password').invalid && (loginForm.get('password').touched || formSubmitted)) {
                                         <p-message severity="error" size="small" variant="simple">Senha é obrigatório</p-message>
                                     }
-                                </div>
-                                <div class="flex justify-between">
-                                    <div class="flex items-center gap-2">
-                                        <p-checkbox [binary]="true" formControlName="rememberMe" />
-                                        <label for="rememberme">Lembrar-me</label>
-                                    </div>
-                                    <span class="font-medium no-underline cursor-pointer text-primary" routerLink="/auth/forget-password">Esqueceu a senha?</span>
                                 </div>
                                 @if (errorMessage) {
                                     <p-message severity="error"> {{ errorMessage }} </p-message>
@@ -110,12 +100,12 @@ export class LoginComponent {
         this.loading = true;
         this.errorMessage = '';
 
-        const { username, password, rememberMe } = this.loginForm.value;
+        const { username, password } = this.loginForm.value;
 
-        this.authService.login({ username, password }, rememberMe).subscribe({
-            next: (res) => {
+        this.authService.login(username, password).subscribe({
+            next: (_res) => {
                 this.formSubmitted = false;
-                this.messageService.success(res.message, 'Sucesso');
+                this.messageService.success('Login realizado com sucesso!', 'Sucesso');
                 this.router.navigate([this.returnUrl]);
             },
             error: (err) => {

@@ -17,8 +17,7 @@ import { DialogUtil } from '@/shared/utils/dialog.util';
                 <i class="pi pi-bars"></i>
             </button>
             <a class="layout-topbar-logo" routerLink="/">
-                <img src="assets/imgs/solution_softworks_logo.png" width="35" alt="Solution Softworks">
-                <span>Solution Softworks</span>
+                <span>Gerenciador de Pets</span>
             </a>
         </div>
 

@@ -9,8 +9,13 @@ export const appRoutes: Routes = [
         component: AppLayout,
         children: [
             {
-                path: '',
+                path: 'pets',
                 loadChildren: () => import('./app/pages/pets/pets.routes').then(r => r.petsRoutes),
+                canActivate: [authGuard]
+            },
+            {
+                path: 'tutores',
+                loadChildren: () => import('./app/pages/tutores/tutores.routes').then(r => r.tutoresRoutes),
                 canActivate: [authGuard]
             }
         ]

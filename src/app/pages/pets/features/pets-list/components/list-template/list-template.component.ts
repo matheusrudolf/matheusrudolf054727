@@ -1,6 +1,9 @@
+import { PetsService } from '@/core/pets.service';
 import { Pets } from '@/shared/models/pets';
+import { DialogUtil } from '@/shared/utils/dialog.util';
+import { MessageUtil } from '@/shared/utils/message.util';
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 
@@ -14,7 +17,7 @@ import { ButtonModule } from 'primeng/button';
                 <div class="flex flex-col sm:flex-row sm:items-center p-6 gap-4 transition-colors duration-200
                     hover:bg-surface-100 dark:hover:bg-surface-800 cursor-pointer"
                     [ngClass]="{ 'border-t border-surface-200 dark:border-surface-700': !$first }"
-                    [routerLink]="['/detail', item.id]">
+                    [routerLink]="['/pets', 'detail', item.id]" >
                     <div class="md:w-40 relative">
                         @if (item.foto) {
                             <img class="block xl:block mx-auto rounded w-full"
@@ -39,7 +42,9 @@ import { ButtonModule } from 'primeng/button';
                     </div>
                     <div class="flex flex-col md:items-end gap-8">
                         <div class="flex flex-row-reverse md:flex-row gap-2">
-                            <p-button label="Detalhes" [routerLink]="['/detail', item.id]" />
+                            <p-button label="Detalhes" severity="info" [routerLink]="['/pets', 'detail', item.id]" />
+                            <p-button label="Remover" icon="pi pi-trash" severity="danger"
+                                (onClick)="handleRemovePetData(item.id);$event.stopPropagation()" />
                         </div>
                     </div>
                 </div>
@@ -48,5 +53,23 @@ import { ButtonModule } from 'primeng/button';
     `
 })
 export class ListTemplateComponent {
+    private readonly petService = inject(PetsService);
+
+    private readonly dialogUtil = inject(DialogUtil);
+    private readonly messageUtil = inject(MessageUtil);
+
     @Input() items!: Pets[];
+
+    @Output() onRefresh: EventEmitter<void> = new EventEmitter<void>();
+
+    public handleRemovePetData(id: number): void {
+        this.dialogUtil.confirmRemoveDialog(() => {
+            this.petService.delete(id).subscribe({
+                next: () => {
+                    this.messageUtil.success('Pet Removido com sucesso!', 'Sucesso');
+                    this.onRefresh.emit();
+                }
+            });
+        });
+    }
 }

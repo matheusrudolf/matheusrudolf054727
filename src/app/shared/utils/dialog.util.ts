@@ -50,4 +50,14 @@ export class DialogUtil {
         });
     }
 
+    public customConfirmDialog(msg: string, getReq: () => void, header?: string, icon?: string): void {
+        this.confirmationService.confirm({
+            message: msg,
+            header: header !== undefined ? header : 'Confirmar',
+            icon: icon !== undefined ? `pi pi-${icon}` : 'pi pi-question',
+            closable: false,
+            accept: () => getReq()
+        });
+    }
+
 }

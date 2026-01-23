@@ -16,26 +16,26 @@ import { ListTemplateComponent } from './components/list-template/list-template.
 import { ButtonModule } from 'primeng/button';
 import { TieredMenuModule } from 'primeng/tieredmenu';
 import { MenuItem } from 'primeng/api';
-import { RouterLink } from "@angular/router";
+import { Router, RouterLink } from "@angular/router";
 
 @Component({
     selector: 'app-pets-list',
     standalone: true,
     imports: [
-    CommonModule,
-    FormsModule,
-    DataViewModule,
-    InputTextModule,
-    SelectButtonModule,
-    ButtonModule,
-    PaginatorModule,
-    IconFieldModule,
-    InputIconModule,
-    TieredMenuModule,
-    ListTemplateComponent,
-    GridTemplateComponent,
-    RouterLink
-],
+        RouterLink,
+        CommonModule,
+        FormsModule,
+        DataViewModule,
+        InputTextModule,
+        SelectButtonModule,
+        ButtonModule,
+        PaginatorModule,
+        IconFieldModule,
+        InputIconModule,
+        TieredMenuModule,
+        ListTemplateComponent,
+        GridTemplateComponent
+    ],
     template: `
         <p-dataview #dv [value]="page.content" [layout]="layout" [loading]="loading">
             <ng-template #header>
@@ -54,7 +54,7 @@ import { RouterLink } from "@angular/router";
                                 </i>
                             </ng-template>
                         </p-selectbutton>
-                        <p-button label="Novo" icon="pi pi-plus" routerLink="/add" />
+                        <p-button label="Novo" icon="pi pi-plus" [routerLink]="['/pets', 'add']" />
                     </div>
                     <div class="flex md:hidden">
                         <p-button icon="pi pi-ellipsis-v" severity="secondary" text
@@ -64,10 +64,15 @@ import { RouterLink } from "@angular/router";
                 </div>
             </ng-template>
             <ng-template #list let-items>
-                <app-list-template [items]="items" />
+                <app-list-template [items]="items" (onRefresh)="handleGetPets()" />
             </ng-template>
             <ng-template #grid let-items>
-                <app-grid-template [items]="items" />
+                <app-grid-template [items]="items" (onRefresh)="handleGetPets()" />
+            </ng-template>
+            <ng-template #emptymessage>
+                <div class="flex justify-center items-center bg-neutral-100 dark:bg-neutral-800 p-15">
+                    <span class="text-lg font-semibold">Nenhum Resultado Encontrado.</span>
+                </div>
             </ng-template>
             <ng-template #footer>
                 <p-paginator (onPageChange)="handlePageChanges($event)" [rows]="page.size" [totalRecords]="page.total"
@@ -77,6 +82,7 @@ import { RouterLink } from "@angular/router";
     `
 })
 export class PetsListComponent {
+    private readonly router = inject(Router);
     private readonly petsService = inject(PetsService);
 
     public page: Pageable<Pets> = new Pageable<Pets>();
@@ -95,7 +101,7 @@ export class PetsListComponent {
         this.handleBuildTieredMenuItems();
     }
 
-    private handleGetPets(): void {
+    public handleGetPets(): void {
         const params = new Map<string, string>();
 
         if (this.search) params.set('nome', this.search);
@@ -119,7 +125,7 @@ export class PetsListComponent {
             {
                 label: 'Novo',
                 icon: 'pi pi-plus',
-                // command: () => this.onOpenForm.emit({ visible: true, state: CrudStateEnum.add, formData: null })
+                command: () => this.router.navigateByUrl('/pets/add')
             },
             {
                 label: 'Modo de Grade',

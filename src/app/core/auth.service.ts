@@ -28,9 +28,9 @@ export class AuthService {
     public refreshToken(): Observable<AuthResponse> {
         const refreshToken = this.getRefreshToken();
 
-        return this.http.post<AuthResponse>(
+        return this.http.put<AuthResponse>(
             `${this.API_URL}/autenticacao/refresh`,
-            {},
+            null,
             {
                 headers: new HttpHeaders({
                     Authorization: `Bearer ${refreshToken}`
@@ -44,6 +44,7 @@ export class AuthService {
     public logout(): void {
         localStorage.removeItem(this.TOKEN_KEY);
         localStorage.removeItem(this.REFRESH_TOKEN_KEY);
+        this.router.navigate(['/autenticacao/login']);
     }
 
     public getAccessToken(): string | null {
@@ -59,7 +60,7 @@ export class AuthService {
     }
 
     private storeTokens(res: AuthResponse): void {
-    localStorage.setItem(this.TOKEN_KEY, res.access_token);
-    localStorage.setItem(this.REFRESH_TOKEN_KEY, res.refresh_token);
-  }
+        localStorage.setItem(this.TOKEN_KEY, res.access_token);
+        localStorage.setItem(this.REFRESH_TOKEN_KEY, res.refresh_token);
+    }
 }

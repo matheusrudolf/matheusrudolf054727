@@ -10,30 +10,53 @@ import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
 import { ListboxModule } from 'primeng/listbox';
 import { CardModule } from 'primeng/card';
+import { TooltipModule } from 'primeng/tooltip';
+import { FileUploadModule } from 'primeng/fileupload';
+import { DialogUtil } from '@/shared/utils/dialog.util';
+import { MessageUtil } from '@/shared/utils/message.util';
 
 @Component({
     selector: 'app-pets-details',
     standalone: true,
-    imports: [FormsModule, RouterLink, CardModule, ButtonModule, ListboxModule, DividerModule, FormBuilderModule],
+    imports: [FormsModule, RouterLink, CardModule, ButtonModule, ListboxModule, DividerModule, FormBuilderModule, TooltipModule, FileUploadModule],
     template: `
         <div class="flex justify-between mb-4">
             <p-button label="Voltar" icon="pi pi-arrow-left" severity="danger"
-                routerLink="/list" />
+                [routerLink]="['/pets', 'list']" />
             <p-button label="Editar" icon="pi pi-pencil" severity="secondary"
-                [routerLink]="['/edit', petData?.id]" />
+                [routerLink]="['/pets', 'edit', petData?.id]" />
         </div>
         @if (petData) {
-            <div class="flex flex-col md:flex-row gap-4">
+            <div class="flex flex-wrap flex-col md:flex-row gap-4">
                 <p-card class="w-auto md:w-[25rem]" [style]="{ overflow: 'hidden' }">
                     <ng-template #header>
                         @if (petData.foto) {
+                            <div class="w-full flex justify-end bg-transparent">
+                                <p-button icon="pi pi-trash" severity="danger" text rounded
+                                    pTooltip="Remover a imagem" (onClick)="handleRemovePetImage()" />
+                            </div>
                             <img class="w-full" [src]="petData.foto.url" [alt]="petData.nome" />
                         } @else {
-                            <div class="flex flex-col bg-surface-50 dark:bg-surface-300/30 justify-center items-center w-full">
-                                <span class="pi pi-image text-neutral-400/50" style="font-size: 4rem">
-                                </span>
-                                <p class="font-semibold">Sem Foto</p>
-                            </div>
+                            <p-fileupload accept="image/*" [multiple]="false" (onSelect)="onFileSelect($event)">
+                                <ng-template #header let-files let-chooseCallback="chooseCallback" let-clearCallback="clearCallback"
+                                    let-uploadCallback="uploadCallback">
+                                    <div class="flex flex-wrap justify-between items-center flex-1 gap-4">
+                                        <div class="flex gap-2">
+                                            <p-button icon="pi pi-images" severity="secondary" text rounded
+                                                pTooltip="Adicionar Foto" (onClick)="chooseCallback()" />
+                                            <p-button icon="pi pi-cloud-upload" severity="success" text rounded
+                                                [disabled]="!files || files.length === 0" pTooltip="Confirmar"
+                                                (onClick)="uploadEvent(clearCallback)" />
+                                        </div>
+                                    </div>
+                                </ng-template>
+                                <ng-template #empty>
+                                    <div class="flex items-center justify-center flex-col">
+                                        <i class="pi pi-image !text-4xl !text-muted-color"></i>
+                                        <p class="mt-6 mb-0">Sem Foto</p>
+                                    </div>
+                                </ng-template>
+                            </p-fileupload>
                         }
                     </ng-template>
                     <ng-template #title>
@@ -52,24 +75,44 @@ import { CardModule } from 'primeng/card';
                         </span>
                     </ng-template>
                 </p-card>
-                <div class="flex flex-col md:flex-row gap-4 flex-1 min-w-0">
+                <div class="flex flex-wrap flex-col md:flex-row gap-4 flex-1">
                     <div class="flex flex-col gap-2">
-                        <span class="text-lg font-bold">Lista de Tutores</span>
+                        <div class="flex justify-between">
+                            <span class="text-lg font-bold">Lista de Tutores</span>
+                        </div>
                         <p-listbox [options]="petData.tutores" [(ngModel)]="selectedTutor" optionLabel="nome"
                             striped class="w-full md:w-80 h-full" emptyMessage="Nenhum Tutor Encontrado"
                             (onChange)="handleChangesFormTutor()" />
                     </div>
-                    <div class="bg-surface-50 dark:bg-surface-300/30 rounded flex-1 min-w-0">
+                    <div class="bg-surface-50 dark:bg-surface-300/30 rounded flex-1">
                         @if (selectedTutor) {
-                            <scx-form [form]="form" [state]="CrudStateEnum.view">
-                                <sci-form-item control="nome" type="text" label="Nome" class="col-span-12" />
-                                <sci-form-item control="email" type="text" label="E-mail" class="col-span-12 md:col-span-6" />
-                                <sci-form-item control="endereco" type="text" label="Endereço" class="col-span-12 md:col-span-6" />
-                                <sci-form-item control="telefone" type="inputmask" label="Telefone" mask="(99) 9 9999-9999"
-                                    class="col-span-12 md:col-span-6" />
-                                <sci-form-item control="cpf" type="inputmask"type="inputmask" label="CPF" mask="999.999.999-99"
-                                    class="col-span-12 md:col-span-6" />
-                            </scx-form>
+                            <div class="flex flex-wrap justify-center flex-col md:flex-row gap-4 p-2">
+                                <div class="flex-1">
+                                    <scx-form [form]="form" [state]="CrudStateEnum.view">
+                                        <sci-form-item control="nome" type="text" label="Nome" class="col-span-12" />
+                                        <sci-form-item control="email" type="text" label="E-mail" class="col-span-12 md:col-span-6" />
+                                        <sci-form-item control="endereco" type="text" label="Endereço" class="col-span-12 md:col-span-6" />
+                                        <sci-form-item control="telefone" type="inputmask" label="Telefone" mask="(99) 9 9999-9999"
+                                            class="col-span-12 md:col-span-6" />
+                                        <sci-form-item control="cpf" type="inputmask"type="inputmask" label="CPF" mask="999.999.999-99"
+                                            class="col-span-12 md:col-span-6" />
+                                    </scx-form>
+                                </div>
+                                <div class="flex flex-col items-center gap-2">
+                                    <span class="text-lg font-semibold text-center">Foto do Tuto</span>
+                                    <div class="flex-1 content-center min-w-50 max-w-50">
+                                        @if (selectedTutor.foto) {
+                                            <img class="w-full rounded" [src]="selectedTutor.foto.url" [alt]="selectedTutor.nome" />
+                                        } @else {
+                                            <div class="flex flex-col bg-surface-50 dark:bg-surface-300/30 justify-center items-center w-full">
+                                                <span class="pi pi-image text-neutral-400/50" style="font-size: 4rem">
+                                                </span>
+                                                <p class="font-semibold">Sem Foto</p>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
                         } @else {
                             <div class="flex justify-center items-center h-full">
                                 <span class="font-semibold">Nenhum Tutor Selecionado</span>
@@ -86,6 +129,8 @@ export class PetsDetailsComponents implements OnInit {
     private readonly petService = inject(PetsService);
 
     public readonly CrudStateEnum = CrudStateEnum;
+    private readonly dialogUtil = inject(DialogUtil);
+    private readonly messageUtil = inject(MessageUtil);
 
     public petData: Pets;
     public selectedTutor: Tutores;
@@ -95,7 +140,8 @@ export class PetsDetailsComponents implements OnInit {
         telefone: new FormControl(''),
         endereco: new FormControl(''),
         cpf: new FormControl('')
-    });;
+    });
+    public selectedFile: File | null = null;
 
     ngOnInit(): void {
         this.handleGetParamIdDetail();
@@ -109,9 +155,7 @@ export class PetsDetailsComponents implements OnInit {
 
     private handleGetPetById(id: number): void {
         this.petService.findPetById(id).subscribe({
-            next: (res) => {
-                this.petData = res
-            }
+            next: (res) => this.petData = res
         });
     }
 
@@ -124,6 +168,35 @@ export class PetsDetailsComponents implements OnInit {
             telefone: this.selectedTutor.telefone,
             endereco: this.selectedTutor.endereco,
             cpf: this.selectedTutor.cpf
+        });
+    }
+
+    public onFileSelect(event: any): void {
+        if (event.currentFiles && event.currentFiles.length > 0) {
+            this.selectedFile = event.currentFiles[0];
+        }
+    }
+
+    public uploadEvent(clearCallback: () => void) {
+        this.dialogUtil.customConfirmDialog('Deseja salvar a foto?', () => {
+            this.petService.addPetImage(this.petData.id, this.selectedFile!).subscribe({
+                next: () => {
+                    this.messageUtil.success('Foto cadastrada com sucesso!', 'Sucesso');
+                    clearCallback();
+                    this.handleGetPetById(this.petData.id);
+                }
+            });
+        });
+    }
+
+    public handleRemovePetImage(): void {
+        this.dialogUtil.customConfirmDialog('Deseja remover a foto?', () => {
+            this.petService.removePetImage(this.petData.id, this.petData.foto.id).subscribe({
+                next: () => {
+                    this.messageUtil.success('Foto removida com sucesso!', 'Sucesso');
+                    this.handleGetPetById(this.petData.id);
+                }
+            });
         });
     }
 }

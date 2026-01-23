@@ -1,5 +1,8 @@
+import { PetsService } from '@/core/pets.service';
 import { Pets } from '@/shared/models/pets';
-import { Component, Input } from '@angular/core';
+import { DialogUtil } from '@/shared/utils/dialog.util';
+import { MessageUtil } from '@/shared/utils/message.util';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 
@@ -11,7 +14,7 @@ import { ButtonModule } from 'primeng/button';
         <div class="grid grid-cols-12 gap-4">
             @for (item of items; track item) {
                 <div class="col-span-12 sm:col-span-6 md:col-span-4 xl:col-span-6 p-2 cursor-pointer"
-                    [routerLink]="['/detail', item.id]">
+                    [routerLink]="['/pets', 'detail', item.id]">
                     <div class="p-6 border border-surface-200 dark:border-surface-700
                         bg-surface-0 dark:bg-surface-900 rounded flex flex-col
                         transition-colors duration-200 hover:bg-surface-100 dark:hover:bg-surface-800">
@@ -41,8 +44,12 @@ import { ButtonModule } from 'primeng/button';
                             </div>
                             <div class="flex flex-col gap-6 mt-6">
                                 <div class="flex gap-2">
-                                    <button pButton label="Detalhes" class="flex-auto"
-                                        [routerLink]="['/detail', item.id]">
+                                    <button pButton label="Detalhes" severity="info"
+                                        class="flex-auto" [routerLink]="['/pets', 'detail', item.id]">
+                                    </button>
+                                    <button pButton label="Remover" severity="danger"
+                                        icon="pi pi-trash" class="flex-auto"
+                                        (click)="handleRemovePetData(item.id);$event.stopPropagation()">
                                     </button>
                                 </div>
                             </div>
@@ -54,5 +61,23 @@ import { ButtonModule } from 'primeng/button';
     `
 })
 export class GridTemplateComponent {
+    private readonly petService = inject(PetsService);
+
+    private readonly dialogUtil = inject(DialogUtil);
+    private readonly messageUtil = inject(MessageUtil);
+
     @Input() items!: Pets[];
+
+    @Output() onRefresh: EventEmitter<void> = new EventEmitter<void>();
+
+    public handleRemovePetData(id: number): void {
+        this.dialogUtil.confirmRemoveDialog(() => {
+            this.petService.delete(id).subscribe({
+                next: () => {
+                    this.messageUtil.success('Pet Removido com sucesso!', 'Sucesso');
+                    this.onRefresh.emit();
+                }
+            });
+        });
+    }
 }

@@ -265,7 +265,7 @@ ng e2e
 
 ### Pet
 ```typescript
-interface interface Pets {
+interface Pets {
     id?: number;
     nome?: string;
     raca?: string;
@@ -301,8 +301,8 @@ interface Foto {
 ## Desenvolvedor
 
 **Matheus Rondon Rudolf**
-- GitHub: [@seu-usuario](https://github.com/matheusrudolf)
-- LinkedIn: [Seu Perfil](https://linkedin.com/in/matheus-rondon-rudolf-733a5b116)
+- GitHub: https://github.com/matheusrudolf
+- LinkedIn: https://linkedin.com/in/matheus-rondon-rudolf-733a5b116
 - Email: matheusrudolf@hotmail.com
 - N° Inscrição : 16285
 - Vaga: ANALISTA DE TECNOLOGIA DA INFORMAÇÃO - ENGENHEIRO DA COMPUTAÇÃO - SÊNIOR

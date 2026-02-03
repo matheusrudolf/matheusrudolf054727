@@ -126,7 +126,7 @@ export class TutoresVinculosComponent implements OnInit {
 
     public handleUnbondPetTutor(): void {
         this.dialogUtil.customConfirmDialog('Deseja realizar o desvinculo?', () => {
-            this.tutorService.bondTutorPet(this.tutor.id, this.petSelected.id).subscribe({
+            this.tutorService.unbondTutorPet(this.tutor.id, this.petSelected.id).subscribe({
                 next: () => {
                     this.messageUtil.success('Vinculo desfeito com sucesso!', 'Sucesso');
                     this.onCancel.emit(false);
